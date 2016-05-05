@@ -1,0 +1,12 @@
+{
+    "name": "lovelock/php-mail-receiver",
+    "description": "A PHP email receiver used to parse email contents for testing",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Qingchun Wang",
+            "email": "frostwong@gmail.com"
+        }
+    ],
+    "require": {}
+}

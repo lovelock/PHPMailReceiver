@@ -8,7 +8,6 @@
 
 namespace Lovelock;
 
-
 class PHPMailReceiver
 {
     private $mailBox;
@@ -20,18 +19,23 @@ class PHPMailReceiver
      * @param string $host
      * @param integer $port
      * @param string $user
-     * @param string $passwd
+     * @param string $password
      * @param string $protocol
-     * @param string $secure
+     * @param bool|string $secure
      */
-    public function __construct($host, $port, $user, $passwd, $protocol, $secure)
+    public function __construct($host, $port, $user, $password, $protocol, $secure = false)
     {
-        $sslField = $secure === null ? 'novalidate-cert' : $secure;
+        $mailBoxString = "{{$host}:{$port}";
+        if ($secure) {
+            $mailBoxString .= '/novalidate-cert/' . $protocol . '/' . $secure . '}';
+        } else {
+            $mailBoxString .= '/' . $protocol . '}';   
+        }
 
-        $this->mailBox = imap_open(
-            "{$host}:{$port}/{$sslField}/{$protocol}/{$sslField}",
+        $this->mailBox = \imap_open(
+            $mailBoxString,
             $user,
-            $passwd,
+            $password,
             0,
             0,
             ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
@@ -55,7 +59,7 @@ class PHPMailReceiver
      *
      * @return string
      */
-    public function getBody($index)
+    public function getBody($index = null)
     {
         if (null === $index) {
             $index = $this->messageCount();
@@ -72,13 +76,13 @@ class PHPMailReceiver
      *
      * @return string
      */
-    public function getMainContent($index)
+    public function getMainContent($index = null)
     {
         if (null === $index) {
             $index = $this->messageCount();
         }
 
-        $encryptedContent = imap_fetchbody($this->mailBox, $index, 1);
+        $encryptedContent = \imap_fetchbody($this->mailBox, $index, 1);
 
         return (new DecryptionAdapter($this->encryptMethod))->decrypt($encryptedContent);
     }

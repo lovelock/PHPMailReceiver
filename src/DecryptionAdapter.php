@@ -32,8 +32,8 @@ class DecryptionAdapter
      */
     public function decrypt($content)
     {
-        $decryptClass = 'Decryption' . ucfirst($this->encryptMethod);
-        
+        $decryptClass = 'Lovelock\\' . 'Decryption' . ucfirst($this->encryptMethod);
+
         return (new $decryptClass())->decrypt($content);
     }
 }
